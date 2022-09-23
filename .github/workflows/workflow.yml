@@ -1,0 +1,10 @@
+steps:
+  - uses: actions/checkout@v2
+  
+  - uses: carlosthe19916/windup-action@master
+    id: rhamt
+    with:
+      target: eap7
+      input: $GITHUB_WORKSPACE
+      output: ${GITHUB_WORKSPACE}.report
+      additional-command-line-arguments: "--sourceMode" #(Optional) You can define all commands available in Migration Toolkit for Applications
