@@ -1,15 +1,43 @@
-name: Example workflow for MTA
 on: [push]
+
 jobs:
-  run:
+
+  windup_job:
     runs-on: ubuntu-latest
+    name: MTA
     steps:
       - uses: actions/checkout@v2
-
       - uses: carlosthe19916/windup-action@master
-        id: rhamt
+        id: mta
         with:
-          target: eap7
-          input: simple-sample-app.ear
-          output: simple-sample-app.ear.report
-          additional-command-line-arguments: "--sourceMode" #(Optional) You can define all commands available in Migration Toolkit for Applications
+          target: 'eap7'
+          additional-command-line-arguments: '--sourceMode'
+      - name: Upload MTA report
+        uses: actions/upload-artifact@v1
+        with:
+          name: mta-artifacts
+          path: ${{ steps.mta.outputs.report }}
+          
+  gp_page_job:
+    runs-on: ubuntu-latest
+    name: Github Pages
+    needs: windup_job
+    steps:
+      - uses: actions/checkout@v2
+      - name: Download MTA Report
+        uses: actions/download-artifact@v1
+        with:
+          name: mta-artifacts
+          path: .
+      - shell: bash
+        run: |
+          mkdir -p target/mta
+      - name: Extract MTA Report
+        shell: bash
+        run: tar -xzvf mta-report.tgz -C target/mta #mta-report.tgz file name is defined from the GH Action and you can not change it
+      - name: GitHub Pages
+        uses: crazy-max/ghaction-github-pages@v1.4.0
+        with:
+          build_dir: target/mta
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
