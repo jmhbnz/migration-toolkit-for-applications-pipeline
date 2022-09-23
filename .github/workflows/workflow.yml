@@ -10,6 +10,6 @@ jobs:
         id: rhamt
         with:
           target: eap7
-          input: $GITHUB_WORKSPACE
-          output: ${GITHUB_WORKSPACE}.report
+          input: simple-sample-app.ear
+          output: simple-sample-app.ear.report
           additional-command-line-arguments: "--sourceMode" #(Optional) You can define all commands available in Migration Toolkit for Applications
